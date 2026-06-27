@@ -13,17 +13,17 @@ import {
 } from 'lucide-react';
 import type { AnalyticsDashboardData, AnalyticsPeriod, AnalyticsSettings } from '@/types';
 import { formatCurrency, formatNumber, getCTRColor } from '@/lib/analytics';
-import RevenueInsights from './RevenueInsights';
-import ArticleLeaderboard from './ArticleLeaderboard';
-import ProductLeaderboard from './ProductLeaderboard';
-import TrendingContent from './TrendingContent';
-import CountryAnalyticsPanel from './CountryAnalytics';
-import ReferrerAnalyticsPanel from './ReferrerAnalytics';
-import LowPerformers from './LowPerformers';
-import BestConverters from './BestConverters';
-import ContentInsights from './ContentInsights';
-import Recommendations from './Recommendations';
-import PerformanceGoals from './PerformanceGoals';
+import RevenueInsights from '@/components/analytics/RevenueInsights';
+import ArticleLeaderboard from '@/components/analytics/ArticleLeaderboard';
+import ProductLeaderboard from '@/components/analytics/ProductLeaderboard';
+import TrendingContent from '@/components/analytics/TrendingContent';
+import CountryAnalyticsPanel from '@/components/analytics/CountryAnalytics';
+import ReferrerAnalyticsPanel from '@/components/analytics/ReferrerAnalytics';
+import LowPerformers from '@/components/analytics/LowPerformers';
+import BestConverters from '@/components/analytics/BestConverters';
+import ContentInsights from '@/components/analytics/ContentInsights';
+import Recommendations from '@/components/analytics/Recommendations';
+import PerformanceGoals from '@/components/analytics/PerformanceGoals';
 
 type AnalyticsTab =
   | 'overview'
