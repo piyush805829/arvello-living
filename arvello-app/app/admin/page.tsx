@@ -31,6 +31,7 @@ export default function AdminPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [generatingArticle, setGeneratingArticle] = useState(false);
+  const [isDraggingThumbnail, setIsDraggingThumbnail] = useState(false);
 
   // Editor Form State
   const [editingArticleId, setEditingArticleId] = useState<string | null>(null);
@@ -98,6 +99,29 @@ export default function AdminPage() {
       setFormErrors((prev) => ({ ...prev, thumbnail: errorMessage }));
     } finally {
       setUploadingThumbnail(false);
+    }
+  };
+
+  const handleThumbnailDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleThumbnailDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingThumbnail(true);
+  };
+
+  const handleThumbnailDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingThumbnail(false);
+  };
+
+  const handleThumbnailDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingThumbnail(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      handleThumbnailUpload(file);
     }
   };
 
@@ -538,7 +562,17 @@ export default function AdminPage() {
                   <label className="block text-xs font-bold text-foreground/80 uppercase tracking-wide">
                     Article Thumbnail
                   </label>
-                  <div className="relative h-48 rounded-2xl border border-dashed border-outline-variant/60 hover:border-foreground/40 transition-colors bg-background/50 flex flex-col items-center justify-center overflow-hidden">
+                  <div 
+                    onDragOver={handleThumbnailDragOver}
+                    onDragEnter={handleThumbnailDragEnter}
+                    onDragLeave={handleThumbnailDragLeave}
+                    onDrop={handleThumbnailDrop}
+                    className={`relative h-48 rounded-2xl border border-dashed transition-all bg-background/50 flex flex-col items-center justify-center overflow-hidden ${
+                      isDraggingThumbnail 
+                        ? 'border-primary bg-primary/5 ring-2 ring-primary/20 scale-[1.01]' 
+                        : 'border-outline-variant/60 hover:border-foreground/40'
+                    }`}
+                  >
                     {articleThumbnail ? (
                       <>
                         <img
@@ -572,7 +606,7 @@ export default function AdminPage() {
                               Upload Article Thumbnail
                             </span>
                             <span className="text-[10px] text-foreground/40 mt-1">
-                              Recommended size: 800x600px (JPEG, PNG)
+                              Drag & drop or click to upload
                             </span>
                           </>
                         )}

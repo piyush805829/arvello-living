@@ -12,6 +12,7 @@ interface ProductEditorProps {
 export default function ProductEditor({ products, onChange }: ProductEditorProps) {
   const [uploadingIds, setUploadingIds] = useState<Record<string, boolean>>({});
   const [generatingIds, setGeneratingIds] = useState<Record<string, boolean>>({});
+  const [draggingIds, setDraggingIds] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const addProduct = () => {
@@ -69,6 +70,29 @@ export default function ProductEditor({ products, onChange }: ProductEditorProps
       setErrors((prev) => ({ ...prev, [`${id}-image`]: errorMessage }));
     } finally {
       setUploadingIds((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDragEnter = (id: string, e: React.DragEvent) => {
+    e.preventDefault();
+    setDraggingIds((prev) => ({ ...prev, [id]: true }));
+  };
+
+  const handleDragLeave = (id: string, e: React.DragEvent) => {
+    e.preventDefault();
+    setDraggingIds((prev) => ({ ...prev, [id]: false }));
+  };
+
+  const handleDrop = (id: string, e: React.DragEvent) => {
+    e.preventDefault();
+    setDraggingIds((prev) => ({ ...prev, [id]: false }));
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      handleImageUpload(id, file);
     }
   };
 
@@ -175,7 +199,17 @@ export default function ProductEditor({ products, onChange }: ProductEditorProps
                   <label className="block text-xs font-bold text-foreground/80 uppercase tracking-wide">
                     Product Image
                   </label>
-                  <div className="relative h-44 rounded-xl border border-dashed border-outline-variant/60 hover:border-foreground/40 transition-colors bg-background/50 flex flex-col items-center justify-center overflow-hidden">
+                  <div 
+                    onDragOver={handleDragOver}
+                    onDragEnter={(e) => handleDragEnter(product.id, e)}
+                    onDragLeave={(e) => handleDragLeave(product.id, e)}
+                    onDrop={(e) => handleDrop(product.id, e)}
+                    className={`relative h-44 rounded-xl border border-dashed transition-all bg-background/50 flex flex-col items-center justify-center overflow-hidden ${
+                      draggingIds[product.id]
+                        ? 'border-primary bg-primary/5 ring-2 ring-primary/20 scale-[1.01]'
+                        : 'border-outline-variant/60 hover:border-foreground/40'
+                    }`}
+                  >
                     {product.image ? (
                       <>
                         <img
@@ -209,7 +243,7 @@ export default function ProductEditor({ products, onChange }: ProductEditorProps
                               Upload Product Image
                             </span>
                             <span className="text-[10px] text-foreground/40 mt-1">
-                              JPEG, PNG, WEBP
+                              Drag & drop or click to upload
                             </span>
                           </>
                         )}
