@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, User } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -62,16 +62,6 @@ export default function Navbar() {
           <button className="text-foreground/75 hover:text-foreground transition-colors cursor-not-allowed" aria-label="Search">
             <Search className="w-5 h-5 stroke-[1.75]" />
           </button>
-          
-          <Link 
-            href="/admin" 
-            className={`flex items-center gap-1 text-foreground/75 hover:text-foreground transition-colors p-1 rounded-full ${
-              isAdmin ? 'text-primary ring-2 ring-foreground/20' : ''
-            }`}
-            title="Admin Workspace"
-          >
-            <User className="w-5 h-5 stroke-[1.75]" />
-          </Link>
         </div>
       </div>
     </header>
