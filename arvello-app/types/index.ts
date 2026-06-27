@@ -6,6 +6,8 @@ export interface Product {
   affiliate_link: string;
   price?: string;
   name?: string;
+  why_recommend?: string;
+  key_features?: string[];
 }
 
 export interface Article {

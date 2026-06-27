@@ -8,6 +8,8 @@ const genAI = new GoogleGenerativeAI(apiKey);
 interface AIProductResponse {
   title: string;
   description: string;
+  why_recommend: string;
+  key_features: string[];
 }
 
 // Download image from URL and convert to Gemini-compatible base64 inline data
@@ -58,11 +60,15 @@ export async function generateProductDetails(imageUrl: string, affiliateLink: st
     1. Identify the product name, materials, aesthetic (e.g. minimalist, walnut, leather, modern, chic), and quality.
     2. Suggest an appealing, short product title (maximum 4-5 words, e.g. "Herman Miller Aeron Chair", "Minimalist Walnut Table Lamp").
     3. Generate a 2-3 sentence engaging description. Focus on quiet luxury, high-end design, and lifestyle integration (how it elevates the living space).
+    4. Generate a short 1-2 sentence recommendation statement for "why_recommend" describing why our editors love and recommend this product (e.g. "Crafted with a meticulous balance of raw materiality and utility...").
+    5. Generate a list of exactly 3 short, specific bullet points for "key_features" (e.g. ["Solid walnut legs", "Dimmable LED", "Genuine full-grain leather"]). Each bullet should be 1-4 words.
     
     Return a JSON object conforming exactly to this structure:
     {
       "title": "Clean Product Title",
-      "description": "Engaging editorial description."
+      "description": "Engaging editorial description.",
+      "why_recommend": "Specific 1-2 sentence recommendation statement.",
+      "key_features": ["Feature 1", "Feature 2", "Feature 3"]
     }
   `;
 
@@ -74,6 +80,8 @@ export async function generateProductDetails(imageUrl: string, affiliateLink: st
     return {
       title: data.title || 'Curated Product Selection',
       description: data.description || 'Elevate your living space with this carefully selected editorial item.',
+      why_recommend: data.why_recommend || 'Selected for its flawless execution of warm minimalist design principles and superior craftsmanship.',
+      key_features: data.key_features || ['Minimalist form factor', 'Premium craftsmanship', 'Timeless design appeal'],
     };
   } catch {
     console.error('Failed to parse Gemini JSON output. Raw output:', text);
@@ -81,6 +89,8 @@ export async function generateProductDetails(imageUrl: string, affiliateLink: st
     return {
       title: 'Curated Design Selection',
       description: 'A hand-selected addition to the editorial layout, curated for the modern minimalist home.',
+      why_recommend: 'Selected for its flawless execution of warm minimalist design principles and superior craftsmanship.',
+      key_features: ['Minimalist form factor', 'Premium craftsmanship', 'Timeless design appeal'],
     };
   }
 }
@@ -117,6 +127,7 @@ export async function generateArticleDetails(imageUrl: string): Promise<AIArticl
     4. Write a comprehensive, multi-paragraph Article Body Content (minimum 3-4 paragraphs) in clean HTML format.
        - Focus on design details, quiet luxury, high-end lifestyle, and spaces.
        - Use HTML tags: <p> for paragraphs, <h2> for subheadings, <blockquote> for quotes, and <strong> for emphasis. Do NOT wrap in markdown block, just output the raw HTML inside the JSON field.
+       - Ensure the blockquote (using <blockquote>) contains a unique, profound philosophical quote about design, architecture, wellness, or lifestyle that is directly inspired by the specific elements of the thumbnail image (e.g. if the image contains skincare/vanity, the quote should be about daily self-care/wellness; if it contains a desk, the quote should be about productivity and intentional workspace; if it contains a living room, the quote should be about gathering or curated spaces). Do NOT reuse generic templates like "True luxury is not about...". Make it completely custom, context-specific, and unique to this article.
     
     Return a JSON object conforming exactly to this structure:
     {

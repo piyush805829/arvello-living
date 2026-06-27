@@ -22,6 +22,8 @@ export default function ProductEditor({ products, onChange }: ProductEditorProps
       title: '',
       description: '',
       affiliate_link: '',
+      why_recommend: '',
+      key_features: [],
     };
     onChange([...products, newProduct]);
   };
@@ -140,6 +142,8 @@ export default function ProductEditor({ products, onChange }: ProductEditorProps
       updateProduct(id, {
         title: data.title,
         description: data.description,
+        why_recommend: data.why_recommend,
+        key_features: data.key_features,
       });
     } catch (err) {
       console.error('Gemini product generation failed:', err);
@@ -339,6 +343,35 @@ export default function ProductEditor({ products, onChange }: ProductEditorProps
                         placeholder="Enter product description..."
                         rows={2}
                         className="w-full px-3 py-1.5 border border-outline-variant/60 rounded-lg text-sm bg-white text-foreground focus:outline-none focus:border-foreground resize-none"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-foreground/80 uppercase tracking-wide">
+                        Why We Recommend It
+                      </label>
+                      <textarea
+                        value={product.why_recommend || ''}
+                        onChange={(e) => updateProduct(product.id, { why_recommend: e.target.value })}
+                        placeholder="Why our editors recommend this design choice..."
+                        rows={2}
+                        className="w-full px-3 py-1.5 border border-outline-variant/60 rounded-lg text-sm bg-white text-foreground focus:outline-none focus:border-foreground resize-none"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-foreground/80 uppercase tracking-wide">
+                        Key Features (comma-separated)
+                      </label>
+                      <input
+                        type="text"
+                        value={(product.key_features || []).join(', ')}
+                        onChange={(e) => {
+                          const features = e.target.value.split(',').map((f) => f.trim()).filter(Boolean);
+                          updateProduct(product.id, { key_features: features });
+                        }}
+                        placeholder="Feature 1, Feature 2, Feature 3"
+                        className="w-full px-3 py-2 border border-outline-variant/60 rounded-lg text-sm bg-white text-foreground focus:outline-none focus:border-foreground"
                       />
                     </div>
                   </div>

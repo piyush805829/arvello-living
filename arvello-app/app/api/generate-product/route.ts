@@ -32,12 +32,14 @@ export async function POST(request: Request) {
     }
 
     // Generate product details using Gemini
-    const { title, description } = await generateProductDetails(imageUrl, affiliateLink);
+    const { title, description, why_recommend, key_features } = await generateProductDetails(imageUrl, affiliateLink);
 
     return NextResponse.json({
       success: true,
       title,
       description,
+      why_recommend,
+      key_features,
     });
   } catch (error) {
     console.error('Product generator endpoint error:', error);

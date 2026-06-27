@@ -254,16 +254,24 @@ export default function ArticleLayout({
                           <div className="space-y-1 bg-secondary-container/10 p-3 rounded-lg border border-outline-variant/10">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-secondary">Why We Recommend It</span>
                             <p className="text-foreground/75 font-serif font-light text-xs italic">
-                              {whyRecommend}
+                              {product.why_recommend || whyRecommend}
                             </p>
                           </div>
 
                           <div className="space-y-1 text-xs">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/30">Key Features</span>
                             <ul className="list-disc list-inside space-y-1 font-serif text-foreground/60 font-light">
-                              <li>Minimalist form factor</li>
-                              <li>Organic raw materials</li>
-                              <li>Timeless interior appeal</li>
+                              {product.key_features && product.key_features.length > 0 ? (
+                                product.key_features.map((feature, fIdx) => (
+                                  <li key={fIdx}>{feature}</li>
+                                ))
+                              ) : (
+                                <>
+                                  <li>Minimalist form factor</li>
+                                  <li>Organic raw materials</li>
+                                  <li>Timeless interior appeal</li>
+                                </>
+                              )}
                             </ul>
                           </div>
                         </div>
