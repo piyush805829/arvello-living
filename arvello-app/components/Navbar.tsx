@@ -48,9 +48,16 @@ export default function Navbar() {
           >
             Home
           </Link>
-          <span className="font-sans text-xs font-semibold tracking-widest uppercase text-foreground/40 cursor-not-allowed">
-            Categories
-          </span>
+          <Link
+            href="/products"
+            className={`font-sans text-xs font-semibold tracking-widest uppercase transition-colors duration-200 ${
+              pathname === '/products'
+                ? 'text-foreground underline decoration-2 underline-offset-8'
+                : 'text-foreground/60 hover:text-foreground'
+            }`}
+          >
+            Products
+          </Link>
           <span className="font-sans text-xs font-semibold tracking-widest uppercase text-foreground/40 cursor-not-allowed">
             About
           </span>
