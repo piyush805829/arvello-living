@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { jwtVerify } from 'jose';
+import { jwtVerify } from 'jose/jwt/verify';
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.ADMIN_PASSWORD || 'arvello-default-secret-key-at-least-32-chars'
