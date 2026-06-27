@@ -4,6 +4,8 @@ export interface Product {
   title: string;
   description: string;
   affiliate_link: string;
+  price?: string;
+  name?: string;
 }
 
 export interface Article {

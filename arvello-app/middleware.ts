@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
             await jwtVerify(token, JWT_SECRET);
             // Already logged in, redirect to dashboard
             return NextResponse.redirect(new URL('/admin', request.url));
-          } catch (_) {
+          } catch {
             // Token invalid, clear it and let them log in
             const response = NextResponse.next();
             response.cookies.delete('admin_session');
@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest) {
       try {
         await jwtVerify(token, JWT_SECRET);
         return NextResponse.next();
-      } catch (_) {
+      } catch {
         // Invalid token, redirect to login & clear cookie
         const response = NextResponse.redirect(new URL('/admin/login', request.url));
         response.cookies.delete('admin_session');
@@ -66,7 +66,7 @@ export async function middleware(request: NextRequest) {
       try {
         await jwtVerify(token, JWT_SECRET);
         return NextResponse.next();
-      } catch (_) {
+      } catch {
         return new NextResponse(
           JSON.stringify({ success: false, error: 'Unauthorized: Invalid token' }),
           { status: 401, headers: { 'content-type': 'application/json' } }

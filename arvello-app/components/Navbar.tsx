@@ -18,8 +18,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Check if we are in the admin dashboard to customize the navbar
-  const isAdmin = pathname?.startsWith('/admin');
+
 
   return (
     <header
