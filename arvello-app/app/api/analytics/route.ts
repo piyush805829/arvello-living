@@ -16,6 +16,7 @@ import type {
   AnalyticsRecommendation,
   AnalyticsDashboardData,
   Article,
+  Product,
 } from '@/types';
 
 // GET /api/analytics — Aggregated analytics data (admin only)
@@ -35,6 +36,8 @@ export async function GET(request: NextRequest) {
     });
 
     const commissionRate = parseFloat(settings.commission_rate || '4');
+    const commissionRateHomeDecor = parseFloat(settings.commission_rate_home_decor || '5');
+    const commissionRateSkinCare = parseFloat(settings.commission_rate_skin_care || '10');
     const aov = parseFloat(settings.average_order_value || '35');
     const monthlyViewGoal = parseInt(settings.monthly_view_goal || '10000');
     const monthlyClickGoal = parseInt(settings.monthly_click_goal || '500');
@@ -92,7 +95,37 @@ export async function GET(request: NextRequest) {
     const overallCtr = uniqueViews > 0
       ? Math.round((uniqueClickers / uniqueViews) * 10000) / 100
       : 0;
-    const estimatedRevenue = calculateEstimatedRevenue(totalClicks, commissionRate, aov);
+
+    // Build lookup maps for products and parents to identify categories dynamically
+    const productsMap = new Map<string, Product>();
+    articles.forEach((a) => {
+      (a.products || []).forEach((p) => {
+        productsMap.set(p.id, p);
+      });
+    });
+
+    const getProductCommission = (pId: string | null) => {
+      if (!pId) return commissionRate;
+      const product = productsMap.get(pId);
+      if (!product) return commissionRate;
+      if (product.category === 'home_decor') return commissionRateHomeDecor;
+      if (product.category === 'skin_care') return commissionRateSkinCare;
+      return commissionRate;
+    };
+
+    // Calculate estimated revenue by aggregating the commission per click event
+    let estimatedRevenue = 0;
+    const articleRevenueMap = new Map<string, number>();
+    const countryRevenueMap = new Map<string, number>();
+
+    productClicks.forEach((e) => {
+      const rate = getProductCommission(e.product_id);
+      const rev = (rate / 100) * aov;
+      estimatedRevenue += rev;
+      articleRevenueMap.set(e.article_id, (articleRevenueMap.get(e.article_id) || 0) + rev);
+      countryRevenueMap.set(e.country, (countryRevenueMap.get(e.country) || 0) + rev);
+    });
+
     const estimatedEpc = calculateEPC(estimatedRevenue, totalClicks);
     const publishedArticleCount = articles.length;
     const totalProductCount = articles.reduce((acc, a) => acc + (a.products?.length || 0), 0);
@@ -167,7 +200,7 @@ export async function GET(request: NextRequest) {
         unique_clickers: clicks?.sessions.size || 0,
         total_clicks: totalArticleClicks,
         ctr: articleCtr,
-        estimated_revenue: calculateEstimatedRevenue(totalArticleClicks, commissionRate, aov),
+        estimated_revenue: articleRevenueMap.get(article.id) || 0,
         top_country: topCountry,
         top_referrer: topReferrer,
         product_count: article.products?.length || 0,
@@ -223,7 +256,15 @@ export async function GET(request: NextRequest) {
           total_clicks: prodClicks,
           unique_clicks: clickData?.sessions.size || 0,
           ctr: productCtr,
-          estimated_revenue: calculateEstimatedRevenue(prodClicks, commissionRate, aov),
+          estimated_revenue: calculateEstimatedRevenue(
+            prodClicks,
+            product.category === 'home_decor'
+              ? commissionRateHomeDecor
+              : product.category === 'skin_care'
+              ? commissionRateSkinCare
+              : commissionRate,
+            aov
+          ),
           top_country: topCountry,
           last_click_at: clickData?.lastClick || null,
         });
@@ -250,7 +291,7 @@ export async function GET(request: NextRequest) {
         views,
         clicks,
         ctr: views > 0 ? Math.round((clicks / views) * 10000) / 100 : 0,
-        estimated_revenue: calculateEstimatedRevenue(clicks, commissionRate, aov),
+        estimated_revenue: countryRevenueMap.get(country) || 0,
       };
     });
 

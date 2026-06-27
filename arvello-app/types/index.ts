@@ -8,6 +8,7 @@ export interface Product {
   name?: string;
   why_recommend?: string;
   key_features?: string[];
+  category?: 'home_decor' | 'skin_care' | 'other';
 }
 
 export interface Article {
@@ -45,6 +46,8 @@ export interface AnalyticsEvent {
 
 export interface AnalyticsSettings {
   commission_rate: number;     // Percentage (e.g. 4 = 4%)
+  commission_rate_home_decor?: number;
+  commission_rate_skin_care?: number;
   average_order_value: number; // USD
   monthly_view_goal: number;
   monthly_click_goal: number;

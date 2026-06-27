@@ -10,6 +10,7 @@ interface AIProductResponse {
   description: string;
   why_recommend: string;
   key_features: string[];
+  category: 'home_decor' | 'skin_care' | 'other';
 }
 
 // Download image from URL and convert to Gemini-compatible base64 inline data
@@ -62,13 +63,15 @@ export async function generateProductDetails(imageUrl: string, affiliateLink: st
     3. Generate a 2-3 sentence engaging description. Focus on quiet luxury, high-end design, and lifestyle integration (how it elevates the living space).
     4. Generate a short 1-2 sentence recommendation statement for "why_recommend" describing why our editors love and recommend this product (e.g. "Crafted with a meticulous balance of raw materiality and utility...").
     5. Generate a list of exactly 3 short, specific bullet points for "key_features" (e.g. ["Solid walnut legs", "Dimmable LED", "Genuine full-grain leather"]). Each bullet should be 1-4 words.
+    6. Classify the product into exactly one of these three categories: "home_decor" (furniture, lighting, vases, rugs, frames, decor, bedding, cushions, home scent), "skin_care" (creams, serums, oils, body wash, cosmetics, beauty tools, hand lotion), or "other" (everything else).
     
     Return a JSON object conforming exactly to this structure:
     {
       "title": "Clean Product Title",
       "description": "Engaging editorial description.",
       "why_recommend": "Specific 1-2 sentence recommendation statement.",
-      "key_features": ["Feature 1", "Feature 2", "Feature 3"]
+      "key_features": ["Feature 1", "Feature 2", "Feature 3"],
+      "category": "home_decor"
     }
   `;
 
@@ -77,20 +80,29 @@ export async function generateProductDetails(imageUrl: string, affiliateLink: st
   
   try {
     const data = JSON.parse(text) as AIProductResponse;
+    
+    // Normalize category
+    let category: 'home_decor' | 'skin_care' | 'other' = 'other';
+    if (data.category === 'home_decor' || data.category === 'skin_care') {
+      category = data.category;
+    }
+
     return {
       title: data.title || 'Curated Product Selection',
       description: data.description || 'Elevate your living space with this carefully selected editorial item.',
       why_recommend: data.why_recommend || 'Selected for its flawless execution of warm minimalist design principles and superior craftsmanship.',
       key_features: data.key_features || ['Minimalist form factor', 'Premium craftsmanship', 'Timeless design appeal'],
+      category: category,
     };
-  } catch {
-    console.error('Failed to parse Gemini JSON output. Raw output:', text);
+  } catch (error) {
+    console.error('Failed to parse Gemini JSON output. Raw output:', text, error);
     // Fallback if parsing fails
     return {
       title: 'Curated Design Selection',
       description: 'A hand-selected addition to the editorial layout, curated for the modern minimalist home.',
       why_recommend: 'Selected for its flawless execution of warm minimalist design principles and superior craftsmanship.',
       key_features: ['Minimalist form factor', 'Premium craftsmanship', 'Timeless design appeal'],
+      category: 'other',
     };
   }
 }

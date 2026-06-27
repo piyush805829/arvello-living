@@ -24,6 +24,7 @@ export default function ProductEditor({ products, onChange }: ProductEditorProps
       affiliate_link: '',
       why_recommend: '',
       key_features: [],
+      category: 'other',
     };
     onChange([...products, newProduct]);
   };
@@ -144,6 +145,7 @@ export default function ProductEditor({ products, onChange }: ProductEditorProps
         description: data.description,
         why_recommend: data.why_recommend,
         key_features: data.key_features,
+        category: data.category || 'other',
       });
     } catch (err) {
       console.error('Gemini product generation failed:', err);
@@ -331,6 +333,21 @@ export default function ProductEditor({ products, onChange }: ProductEditorProps
                         placeholder="Enter product title..."
                         className="w-full px-3 py-2 border border-outline-variant/60 rounded-lg text-sm bg-white text-foreground focus:outline-none focus:border-foreground"
                       />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="block text-xs font-bold text-foreground/80 uppercase tracking-wide">
+                        Category
+                      </label>
+                      <select
+                        value={product.category || 'other'}
+                        onChange={(e) => updateProduct(product.id, { category: e.target.value as 'home_decor' | 'skin_care' | 'other' })}
+                        className="w-full px-3 py-2 border border-outline-variant/60 rounded-lg text-sm bg-white text-foreground focus:outline-none focus:border-foreground cursor-pointer"
+                      >
+                        <option value="home_decor">Home Decor (5% Comm.)</option>
+                        <option value="skin_care">Skin Care (10% Comm.)</option>
+                        <option value="other">Other (Global Comm.)</option>
+                      </select>
                     </div>
 
                     <div className="space-y-1">

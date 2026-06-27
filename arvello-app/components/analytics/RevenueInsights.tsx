@@ -14,11 +14,15 @@ interface RevenueInsightsProps {
 export default function RevenueInsights({ overview, settings, onUpdateSettings }: RevenueInsightsProps) {
   const [showSettings, setShowSettings] = useState(false);
   const [commissionRate, setCommissionRate] = useState(settings?.commission_rate || 4);
+  const [commissionRateHomeDecor, setCommissionRateHomeDecor] = useState(settings?.commission_rate_home_decor || 5);
+  const [commissionRateSkinCare, setCommissionRateSkinCare] = useState(settings?.commission_rate_skin_care || 10);
   const [aov, setAov] = useState(settings?.average_order_value || 35);
 
   const handleSave = () => {
     onUpdateSettings({
       commission_rate: commissionRate,
+      commission_rate_home_decor: commissionRateHomeDecor,
+      commission_rate_skin_care: commissionRateSkinCare,
       average_order_value: aov,
     });
     setShowSettings(false);
@@ -50,10 +54,10 @@ export default function RevenueInsights({ overview, settings, onUpdateSettings }
       {/* Settings Panel */}
       {showSettings && (
         <div className="p-6 border-b border-outline-variant/30 bg-background/40 animate-fade-in">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/50">
-                Commission Rate (%)
+                Global Commission (%)
               </label>
               <input
                 type="number"
@@ -62,6 +66,34 @@ export default function RevenueInsights({ overview, settings, onUpdateSettings }
                 step="0.5"
                 value={commissionRate}
                 onChange={(e) => setCommissionRate(parseFloat(e.target.value) || 0)}
+                className="w-full px-3 py-2 text-sm border border-outline-variant/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/50">
+                Home Decor Comm. (%)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                step="0.5"
+                value={commissionRateHomeDecor}
+                onChange={(e) => setCommissionRateHomeDecor(parseFloat(e.target.value) || 0)}
+                className="w-full px-3 py-2 text-sm border border-outline-variant/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/50">
+                Skin Care Comm. (%)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                step="0.5"
+                value={commissionRateSkinCare}
+                onChange={(e) => setCommissionRateSkinCare(parseFloat(e.target.value) || 0)}
                 className="w-full px-3 py-2 text-sm border border-outline-variant/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
@@ -122,7 +154,7 @@ export default function RevenueInsights({ overview, settings, onUpdateSettings }
         </div>
 
         <p className="text-[9px] text-foreground/30 mt-4 text-center italic">
-          ⚠️ All revenue figures are estimates based on a {settings?.commission_rate || 4}% commission rate and ${settings?.average_order_value || 35} average order value.
+          ⚠️ All revenue figures are estimates based on your settings: Home Decor ({settings?.commission_rate_home_decor || 5}%), Skin Care ({settings?.commission_rate_skin_care || 10}%), Other ({settings?.commission_rate || 4}%) and ${settings?.average_order_value || 35} AOV.
         </p>
       </div>
     </div>

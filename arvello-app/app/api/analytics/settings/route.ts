@@ -25,6 +25,8 @@ export async function GET() {
       success: true,
       settings: {
         commission_rate: parseFloat(settings.commission_rate || '4'),
+        commission_rate_home_decor: parseFloat(settings.commission_rate_home_decor || '5'),
+        commission_rate_skin_care: parseFloat(settings.commission_rate_skin_care || '10'),
         average_order_value: parseFloat(settings.average_order_value || '35'),
         monthly_view_goal: parseInt(settings.monthly_view_goal || '10000'),
         monthly_click_goal: parseInt(settings.monthly_click_goal || '500'),
@@ -48,6 +50,8 @@ export async function PUT(request: Request) {
 
     const validKeys = [
       'commission_rate',
+      'commission_rate_home_decor',
+      'commission_rate_skin_care',
       'average_order_value',
       'monthly_view_goal',
       'monthly_click_goal',
