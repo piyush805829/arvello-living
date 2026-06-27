@@ -74,6 +74,11 @@ export async function middleware(request: NextRequest) {
       }
     }
 
+    // 2b. Allow /api/track publicly (analytics events from anonymous visitors)
+    if (pathname.startsWith('/api/track')) {
+      return NextResponse.next();
+    }
+
     return NextResponse.next();
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : String(err);
@@ -98,5 +103,7 @@ export const config = {
     '/api/generate-product/:path*',
     '/api/generate-article/:path*',
     '/api/articles/:path*',
+    '/api/track/:path*',
+    '/api/analytics/:path*',
   ],
 };

@@ -5,11 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Search, ExternalLink, X, HelpCircle, ArrowRight } from 'lucide-react';
 import { Product } from '@/types';
+import { generateSessionId } from '@/lib/analytics';
 
 interface ProductWithMetadata extends Product {
   featuredIn: {
     title: string;
     slug: string;
+    articleId: string;
   }[];
 }
 
@@ -21,6 +23,36 @@ interface ProductsClientProps {
 export default function ProductsClient({ products, articles }: ProductsClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedArticleSlug, setSelectedArticleSlug] = useState<string>('all');
+
+  const trackProductClick = async (productId: string, articleId: string) => {
+    try {
+      let sessionId = '';
+      try {
+        sessionId = sessionStorage.getItem('arvello_session_id') || '';
+      } catch {}
+      if (!sessionId) {
+        sessionId = generateSessionId();
+        try {
+          sessionStorage.setItem('arvello_session_id', sessionId);
+        } catch {}
+      }
+      const referrer = typeof document !== 'undefined' ? document.referrer : '';
+      await fetch('/api/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_type: 'product_click',
+          article_id: articleId,
+          product_id: productId,
+          session_id: sessionId,
+          referrer,
+        }),
+        keepalive: true,
+      });
+    } catch (e) {
+      console.error('Failed to track product click:', e);
+    }
+  };
 
   // Filter products based on search query and selected article
   const filteredProducts = useMemo(() => {
@@ -241,6 +273,19 @@ export default function ProductsClient({ products, articles }: ProductsClientPro
                     href={product.affiliate_link}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => {
+                      let articleId = '';
+                      if (selectedArticleSlug !== 'all') {
+                        const matched = product.featuredIn.find(f => f.slug === selectedArticleSlug);
+                        if (matched && matched.articleId) articleId = matched.articleId;
+                      }
+                      if (!articleId && product.featuredIn[0] && product.featuredIn[0].articleId) {
+                        articleId = product.featuredIn[0].articleId;
+                      }
+                      if (articleId) {
+                        trackProductClick(product.id, articleId);
+                      }
+                    }}
                     className="flex items-center justify-center gap-2 w-full py-3 bg-primary text-primary-foreground font-sans text-[10px] font-bold uppercase tracking-widest rounded-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
                   >
                     View on Amazon

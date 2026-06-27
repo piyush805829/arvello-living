@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Article, Product } from '@/types';
 import RichTextEditor from '@/components/RichTextEditor';
 import ProductEditor from '@/components/ProductEditor';
+import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
 import {
   LayoutDashboard,
   FilePlus,
@@ -19,11 +20,12 @@ import {
   FolderDot,
   Package,
   Sparkles,
+  BarChart3,
 } from 'lucide-react';
 
 export default function AdminPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'editor'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'editor' | 'analytics'>('dashboard');
 
   // Articles & Loading States
   const [articles, setArticles] = useState<Article[]>([]);
@@ -336,6 +338,21 @@ export default function AdminPage() {
             >
               <FilePlus className="w-4 h-4" />
               New Article
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab('analytics');
+                setEditingArticleId(null);
+              }}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
+                activeTab === 'analytics'
+                  ? 'bg-secondary-container text-foreground'
+                  : 'text-foreground/60 hover:bg-background hover:text-foreground'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4" />
+              Analytics
             </button>
           </nav>
 
@@ -725,6 +742,11 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* TAB 3: ANALYTICS VIEW */}
+          {activeTab === 'analytics' && (
+            <AnalyticsDashboard />
           )}
         </main>
       </div>

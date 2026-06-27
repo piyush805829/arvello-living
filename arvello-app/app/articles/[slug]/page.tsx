@@ -6,6 +6,7 @@ import { AlertTriangle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Article } from '@/types';
 import ArticleLayout from '@/components/ArticleLayout';
+import TrackingProvider from '@/components/TrackingProvider';
 
 // Force dynamic validation to capture edits instantly
 export const revalidate = 0;
@@ -213,12 +214,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
-      {/* Render Premium Editorial Layout */}
-      <ArticleLayout 
-        article={modifiedArticle} 
-        headings={headings}
-        relatedArticles={relatedArticles}
-      />
+      {/* Analytics Tracking + Premium Editorial Layout */}
+      <TrackingProvider articleId={modifiedArticle.id}>
+        <ArticleLayout 
+          article={modifiedArticle} 
+          headings={headings}
+          relatedArticles={relatedArticles}
+        />
+      </TrackingProvider>
     </>
   );
 }

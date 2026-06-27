@@ -14,6 +14,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Article } from '@/types';
+import { useTracking } from '@/components/TrackingProvider';
 
 interface HeadingItem {
   text: string;
@@ -36,6 +37,7 @@ export default function ArticleLayout({
   const [copied, setCopied] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const articleContentRef = useRef<HTMLDivElement>(null);
+  const { trackProductClick } = useTracking();
 
   // Format date
   const formatDate = (dateStr: string | null) => {
@@ -283,6 +285,7 @@ export default function ArticleLayout({
                           href={product.affiliate_link}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={() => trackProductClick(product.id)}
                           className="flex items-center justify-center gap-2 w-full py-3 bg-primary text-primary-foreground font-sans text-[10px] font-bold uppercase tracking-widest rounded-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
                         >
                           View on Amazon

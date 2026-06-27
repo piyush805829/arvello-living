@@ -12,6 +12,7 @@ interface ProductWithMetadata extends Product {
   featuredIn: {
     title: string;
     slug: string;
+    articleId: string;
   }[];
 }
 
@@ -174,6 +175,7 @@ create policy "Allow full admin access" on public.articles for all using (true) 
             existing.featuredIn.push({
               title: article.title,
               slug: article.slug,
+              articleId: article.id,
             });
           }
         } else {
@@ -183,6 +185,7 @@ create policy "Allow full admin access" on public.articles for all using (true) 
               {
                 title: article.title,
                 slug: article.slug,
+                articleId: article.id,
               },
             ],
           });
